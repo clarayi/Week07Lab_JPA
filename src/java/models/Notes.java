@@ -132,8 +132,11 @@ public class Notes implements Serializable {
     }
 
     @Override
-    public String toString() {
-        return "models.Notes[ noteid=" + noteid + " ]";
+    public String toString() 
+    {
+        return "Note ID: " + this.noteid + "\n" +
+               "Note title: " + this.title + "\n" + 
+               "Note contents: " + this.contents + "\n";
     }
     
 }
