@@ -23,7 +23,7 @@
             </tr>
             <c:forEach var="oneNote" items="${noteList}" varStatus="status">
                 <form method="POST">
-                    <input type="hidden" name="action" value="edit=${oneNote.noteid}"/>
+                    <input type="hidden" name="action" value="editClicked=${oneNote.noteid}"/>
                     <tr>
                         <td>${oneNote.datecreated}</td>
                         <td>${oneNote.title}</td>
@@ -32,14 +32,19 @@
                 </form>    
             </c:forEach>
         </table><br>
+        <h2>${whatToDo} Note</h2>
+        <c:if test="${whatToDo eq 'Edit'}">
+            <form method="POST">
+            <input type="hidden" name="action" value="delete=${editNoteID}"/>
+            <input type="submit" value="Delete note"/><br><br>
+            </form>
+        </c:if>
         <form method="POST" id="form2">
-            <h2>${whatToDo} Note</h2>
             <c:if test="${whatToDo eq 'Add'}">
                 <input type="hidden" name="action" value="add"/>
             </c:if>
             <c:if test="${whatToDo eq 'Edit'}">
-                <input type="hidden" name="action" value="delete=${editNoteID}"/>
-                <input type="submit" value="Delete note"/><br><br>
+                <input type="hidden" name="action" value="edit=${editNoteID}"/>
             </c:if>
             <input type="text" placeholder="Title" value="${titleBox}" name="inputTitle"/><br>
             <textarea rows="7" cols="30" form="form2" name="inputContents">${textareaBox}</textarea>

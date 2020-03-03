@@ -8,6 +8,7 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import models.Notes;
 import models.Users;
+import org.eclipse.jdt.internal.compiler.lookup.InferenceContext18;
 import services.NoteService;
 
 /**
@@ -39,7 +41,6 @@ public class NoteServlet extends HttpServlet
         editList.clear();
         
         List<Notes> noteList = null;       
-        
         try 
         {
             noteList = ns.getAll();
@@ -66,10 +67,12 @@ public class NoteServlet extends HttpServlet
     {
         String action = request.getParameter("action");
         
-        if(action.contains("edit"))
+        if(action.contains("editClicked="))
         {
             request.setAttribute("whatToDo", "Edit");
+            
             editList.clear();
+            session.setAttribute("editList", editList);
             
             String[] split = action.split("=");
             String noteidString = split[1];
@@ -93,7 +96,45 @@ public class NoteServlet extends HttpServlet
         }
         else if(action.contains("add"))
         {
-            //
+            request.setAttribute("whatToDo", "Add");
+            
+            List<Notes> noteList = null;       
+            try 
+            {
+                noteList = ns.getAll();
+            } 
+            catch (Exception ex) 
+            {
+                Logger.getLogger(NoteService.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            int newNoteID = noteList.size() + 1;
+            
+            String title = request.getParameter("inputTitle");
+            String contents = request.getParameter("inputContents");
+            
+            try 
+            {
+                int addRow = ns.insert(newNoteID, title, contents, new Date());
+                
+                if(addRow == 1)
+                {
+                    List<Notes> newNoteList = null;       
+                    try 
+                    {
+                        newNoteList = ns.getAll();
+                        session.setAttribute("noteList", newNoteList);
+                    } 
+                    catch (Exception ex) 
+                    {
+                        Logger.getLogger(NoteService.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            } 
+            catch (Exception ex) 
+            {
+                Logger.getLogger(NoteServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         else if(action.contains("delete"))
         {
@@ -109,6 +150,62 @@ public class NoteServlet extends HttpServlet
                 {
                     request.setAttribute("titleBox", "Note Deleted");
                     request.setAttribute("textareaBox", "Note Deleted");
+                    
+                    List<Notes> noteList = null;       
+                    try 
+                    {
+                        noteList = ns.getAll();
+
+                        for(int i = 0; i < noteList.size(); i++)
+                        {
+                            System.out.println(noteList.get(i));
+                        }
+
+                        session.setAttribute("noteList", noteList);
+                    } 
+                    catch (Exception ex) 
+                    {
+                        Logger.getLogger(NoteService.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            } 
+            catch (Exception ex) 
+            {
+                Logger.getLogger(NoteServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        else if(action.contains("edit="))
+        {
+            String[] split = action.split("=");
+            String noteidString = split[1];
+            int noteid = Integer.parseInt(noteidString);
+            
+            try 
+            {
+                String title = request.getParameter("inputTitle");
+                String contents = request.getParameter("inputContents");
+                Date dateCreated = new Date();
+                
+                int numOfRow = ns.update(noteid, title, contents, dateCreated);
+                
+                editList.clear();
+                session.setAttribute("editList", editList);
+                
+                List<Notes> noteList = null;       
+                try 
+                {
+                    noteList = ns.getAll();
+
+                    for(int i = 0; i < noteList.size(); i++)
+                    {
+                        System.out.println(noteList.get(i));
+                    }
+
+                    session.setAttribute("noteList", noteList);
+                } 
+                catch (Exception ex) 
+                {
+                    Logger.getLogger(NoteService.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } 
             catch (Exception ex) 
@@ -117,7 +214,7 @@ public class NoteServlet extends HttpServlet
             }
         }
         
-        response.sendRedirect(request.getContextPath() + "/notes");         
+        getServletContext().getRequestDispatcher("/WEB-INF/notes.jsp").forward(request, response);
     }
 
     @Override
