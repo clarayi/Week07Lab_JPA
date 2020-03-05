@@ -90,22 +90,14 @@ public class NoteServlet extends HttpServlet
             {
                 Logger.getLogger(NoteServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
+            
+            request.setAttribute("action", null);
         }
         else if(action.contains("add"))
         {
             request.setAttribute("whatToDo", "Add");
             
-            List<Notes> noteList = null;       
-            try 
-            {
-                noteList = ns.getAll();
-            } 
-            catch (Exception ex) 
-            {
-                Logger.getLogger(NoteService.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-            int newNoteID = noteList.size() + 1;
+            int newNoteID = findNewNoteID();
             
             String title = request.getParameter("inputTitle");
             String contents = request.getParameter("inputContents");
@@ -132,6 +124,8 @@ public class NoteServlet extends HttpServlet
             {
                 Logger.getLogger(NoteServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
+            
+            request.setAttribute("action", null);
         }
         else if(action.contains("delete"))
         {
@@ -170,6 +164,8 @@ public class NoteServlet extends HttpServlet
             {
                 Logger.getLogger(NoteServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
+            
+            request.setAttribute("action", null);
         }
         else if(action.contains("edit="))
         {
@@ -187,6 +183,7 @@ public class NoteServlet extends HttpServlet
                 
                 editList.clear();
                 session.setAttribute("editList", editList);
+                request.setAttribute("whatToDo", "Add");
                 
                 List<Notes> noteList = null;       
                 try 
@@ -209,6 +206,8 @@ public class NoteServlet extends HttpServlet
             {
                 Logger.getLogger(NoteServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
+            
+            request.setAttribute("action", null);
         }
         
         getServletContext().getRequestDispatcher("/WEB-INF/notes.jsp").forward(request, response);
@@ -219,5 +218,38 @@ public class NoteServlet extends HttpServlet
     {
         return "Short description";
     }
-
+    
+    public int findNewNoteID()
+    {
+        int newNoteID = 0;
+        
+        List<Notes> noteList = null;       
+        try 
+        {
+            noteList = ns.getAll();
+           
+            for(int i = 0; i < noteList.size(); i++)
+            {
+                System.out.println(noteList.get(i));
+            }
+            
+            session.setAttribute("noteList", noteList);
+        } 
+        catch (Exception ex) 
+        {
+            Logger.getLogger(NoteService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        for(int i = 0; i < noteList.size(); i++)
+        {
+            if(noteList.get(i).getNoteid() > newNoteID)
+            {
+                newNoteID = noteList.get(i).getNoteid();
+            }
+        }
+        
+        System.out.println(newNoteID);
+        
+        return newNoteID + 1;
+    }
 }

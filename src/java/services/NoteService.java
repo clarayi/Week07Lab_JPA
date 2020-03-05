@@ -4,6 +4,7 @@ import dataaccess.NoteDB;
 import java.util.Date;
 import java.util.List;
 import models.Notes;
+import models.Users;
 
 public class NoteService 
 {
@@ -44,6 +45,7 @@ public class NoteService
     public int insert(int noteID, Date dateCreated, String title, String contents) throws Exception 
     {
         Notes note = new Notes(noteID, dateCreated, title, contents);
+        note.setOwner(new Users("anne"));
         
         return noteDB.insert(note);
     }
