@@ -60,11 +60,13 @@ public class Notes implements Serializable {
     public Notes() {
     }
 
-    public Notes(Integer noteid) {
+    public Notes(Integer noteid) 
+    {
         this.noteid = noteid;
     }
 
-    public Notes(Integer noteid, Date datecreated, String title, String contents) {
+    public Notes(Integer noteid, Date datecreated, String title, String contents) 
+    {
         this.noteid = noteid;
         this.datecreated = datecreated;
         this.title = title;

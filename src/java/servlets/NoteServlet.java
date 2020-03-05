@@ -6,7 +6,6 @@
 package servlets;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,8 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import models.Notes;
-import models.Users;
-import org.eclipse.jdt.internal.compiler.lookup.InferenceContext18;
 import services.NoteService;
 
 /**
@@ -115,7 +112,7 @@ public class NoteServlet extends HttpServlet
             
             try 
             {
-                int addRow = ns.insert(newNoteID, title, contents, new Date());
+                int addRow = ns.insert(newNoteID, new Date(), title, contents);
                 
                 if(addRow == 1)
                 {
